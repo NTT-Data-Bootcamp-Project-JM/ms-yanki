@@ -1,193 +1,250 @@
-openapi: 3.1.0
+openapi: 3.0.3
 info:
   title: Yanki
-  description: "Mobile wallet, top-up, cash-out, and transfers between phone numbers."
   version: 1.0.0
-servers:
-- url: http://127.0.0.1:8085
-  description: Generated server url
-security:
-- bearer-jwt: []
+  description: >
+    Source of the Yanki API. The server interface is generated from this file.
+    Mobile wallet, top-up, cash-out, and transfers between phone numbers.
 paths:
-  /api/v1/wallets/{id}:
-    get:
-      tags:
-      - wallet-controller
-      operationId: one
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-      responses:
-        "200":
-          description: OK
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/SingleResponseEntityWalletDocument"
-    put:
-      tags:
-      - wallet-controller
-      operationId: update
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/UpdateRequest"
-        required: true
-      responses:
-        "200":
-          description: OK
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/SingleResponseEntityWalletDocument"
-    delete:
-      tags:
-      - wallet-controller
-      operationId: delete
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-      responses:
-        "200":
-          description: OK
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/SingleResponseEntityVoid"
   /api/v1/wallets:
-    get:
-      tags:
-      - wallet-controller
-      operationId: all
-      responses:
-        "200":
-          description: OK
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/SingleResponseEntityListWalletDocument"
     post:
-      tags:
-      - wallet-controller
+      tags: [Wallet]
       operationId: create
+      summary: Create a wallet
       requestBody:
+        required: true
         content:
           application/json:
             schema:
               $ref: "#/components/schemas/WalletRequest"
-        required: true
+      responses:
+        "201":
+          description: Created wallet
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Wallet"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "422":
+          $ref: "#/components/responses/Unprocessable"
+    get:
+      tags: [Wallet]
+      operationId: all
+      summary: List wallets
       responses:
         "200":
-          description: OK
+          description: All wallets
           content:
-            '*/*':
+            application/json:
               schema:
-                $ref: "#/components/schemas/SingleResponseEntityWalletDocument"
-  /api/v1/wallets/{id}/top-ups:
-    post:
-      tags:
-      - wallet-controller
-      operationId: topUp
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
+                type: array
+                items:
+                  $ref: "#/components/schemas/Wallet"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+  /api/v1/wallets/{id}:
+    parameters:
+      - $ref: "#/components/parameters/Id"
+    get:
+      tags: [Wallet]
+      operationId: one
+      summary: Read one wallet
+      responses:
+        "200":
+          description: The wallet
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Wallet"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "422":
+          $ref: "#/components/responses/Unprocessable"
+    put:
+      tags: [Wallet]
+      operationId: update
+      summary: Replace email and device
       requestBody:
+        required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/AmountRequest"
-        required: true
+              $ref: "#/components/schemas/UpdateRequest"
       responses:
         "200":
-          description: OK
+          description: Updated wallet
           content:
-            '*/*':
+            application/json:
               schema:
-                $ref: "#/components/schemas/SingleResponseEntityMapStringString"
-  /api/v1/wallets/{id}/debit-card:
-    post:
-      tags:
-      - wallet-controller
-      operationId: link
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/LinkRequest"
-        required: true
+                $ref: "#/components/schemas/Wallet"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "422":
+          $ref: "#/components/responses/Unprocessable"
+    delete:
+      tags: [Wallet]
+      operationId: delete
+      summary: Delete a wallet
       responses:
-        "200":
-          description: OK
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/SingleResponseEntityWalletDocument"
-  /api/v1/wallets/{id}/cash-outs:
-    post:
-      tags:
-      - wallet-controller
-      operationId: cashOut
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/AmountRequest"
-        required: true
-      responses:
-        "200":
-          description: OK
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/SingleResponseEntityMapStringString"
+        "204":
+          description: Deleted
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "422":
+          $ref: "#/components/responses/Unprocessable"
   /api/v1/wallets/transfers:
     post:
-      tags:
-      - wallet-controller
+      tags: [Wallet]
       operationId: transfer
+      summary: Transfer between phone numbers
       requestBody:
+        required: true
         content:
           application/json:
             schema:
               $ref: "#/components/schemas/TransferRequest"
-        required: true
       responses:
         "200":
-          description: OK
+          description: Sender wallet after the transfer
           content:
-            '*/*':
+            application/json:
               schema:
-                $ref: "#/components/schemas/SingleResponseEntityWalletDocument"
+                $ref: "#/components/schemas/Wallet"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "422":
+          $ref: "#/components/responses/Unprocessable"
+  /api/v1/wallets/{id}/debit-card:
+    parameters:
+      - $ref: "#/components/parameters/Id"
+    post:
+      tags: [Wallet]
+      operationId: link
+      summary: Link a debit card
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LinkRequest"
+      responses:
+        "200":
+          description: Linked wallet
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Wallet"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "422":
+          $ref: "#/components/responses/Unprocessable"
+  /api/v1/wallets/{id}/top-ups:
+    parameters:
+      - $ref: "#/components/parameters/Id"
+    post:
+      tags: [Wallet]
+      operationId: topUp
+      summary: Request a top-up from the linked account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AmountRequest"
+      responses:
+        "202":
+          description: Accepted. The wallet is credited only after the bank applies the debit.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OperationAccepted"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "422":
+          $ref: "#/components/responses/Unprocessable"
+  /api/v1/wallets/{id}/cash-outs:
+    parameters:
+      - $ref: "#/components/parameters/Id"
+    post:
+      tags: [Wallet]
+      operationId: cashOut
+      summary: Request a cash-out to the linked account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AmountRequest"
+      responses:
+        "202":
+          description: Accepted. The wallet is debited immediately.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OperationAccepted"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "422":
+          $ref: "#/components/responses/Unprocessable"
 components:
+  securitySchemes:
+    bearer-jwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    Id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+  responses:
+    BadRequest:
+      description: The body failed validation.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    Unauthorized:
+      description: A valid bearer token is required.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    Unprocessable:
+      description: A business rule rejected the request.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
   schemas:
+    WalletRequest:
+      type: object
+      required: [documentType, documentNumber, phone, imei, email]
+      properties:
+        documentType:
+          type: string
+          enum: [DNI, CEX, PASSPORT]
+        documentNumber:
+          type: string
+        phone:
+          type: string
+        imei:
+          type: string
+        email:
+          type: string
     UpdateRequest:
       type: object
       properties:
@@ -195,66 +252,58 @@ components:
           type: string
         imei:
           type: string
-    SingleResponseEntityWalletDocument: {}
-    WalletRequest:
-      type: object
-      properties:
-        documentType:
-          type: string
-          minLength: 1
-        documentNumber:
-          type: string
-          minLength: 1
-        phone:
-          type: string
-          minLength: 1
-        imei:
-          type: string
-          minLength: 1
-        email:
-          type: string
-          minLength: 1
-      required:
-      - documentNumber
-      - documentType
-      - email
-      - imei
-      - phone
-    AmountRequest:
-      type: object
-      properties:
-        amount:
-          type: number
-      required:
-      - amount
-    SingleResponseEntityMapStringString: {}
-    LinkRequest:
-      type: object
-      properties:
-        debitCardNumber:
-          type: string
-          minLength: 1
-      required:
-      - debitCardNumber
     TransferRequest:
       type: object
+      required: [sourcePhone, targetPhone, amount]
       properties:
         sourcePhone:
           type: string
-          minLength: 1
         targetPhone:
           type: string
-          minLength: 1
         amount:
           type: number
-      required:
-      - amount
-      - sourcePhone
-      - targetPhone
-    SingleResponseEntityListWalletDocument: {}
-    SingleResponseEntityVoid: {}
-  securitySchemes:
-    bearer-jwt:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
+    LinkRequest:
+      type: object
+      required: [debitCardNumber]
+      properties:
+        debitCardNumber:
+          type: string
+    AmountRequest:
+      type: object
+      required: [amount]
+      properties:
+        amount:
+          type: number
+    OperationAccepted:
+      type: object
+      required: [operationId]
+      properties:
+        operationId:
+          type: string
+    Wallet:
+      type: object
+      properties:
+        id:
+          type: string
+        documentType:
+          type: string
+        documentNumber:
+          type: string
+        phone:
+          type: string
+        imei:
+          type: string
+        email:
+          type: string
+        balance:
+          type: number
+        debitCardNumber:
+          type: string
+    ErrorResponse:
+      type: object
+      required: [message]
+      properties:
+        message:
+          type: string
+security:
+  - bearer-jwt: []

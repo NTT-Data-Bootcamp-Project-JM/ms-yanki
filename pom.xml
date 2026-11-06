@@ -18,6 +18,7 @@
         <spring-cloud.version>2025.0.1</spring-cloud.version>
         <jjwt.version>0.12.6</jjwt.version>
         <springdoc.version>2.8.9</springdoc.version>
+        <openapi-generator.version>7.13.0</openapi-generator.version>
         <jacoco.version>0.8.12</jacoco.version>
         <resilience4j.version>2.2.0</resilience4j.version>
     </properties>
@@ -117,6 +118,17 @@
         </dependencies>
     </dependencyManagement>
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+            <resource>
+                <directory>${project.basedir}/openapi</directory>
+                <includes>
+                    <include>openapi.yaml</include>
+                </includes>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -144,6 +156,42 @@
                         <id>report</id>
                         <phase>test</phase>
                         <goals><goal>report</goal></goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.openapitools</groupId>
+                <artifactId>openapi-generator-maven-plugin</artifactId>
+                <version>${openapi-generator.version}</version>
+                <executions>
+                    <execution>
+                        <id>generate-api</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>${project.basedir}/openapi/openapi.yaml</inputSpec>
+                            <generatorName>spring</generatorName>
+                            <apiPackage>com.nttdata.bank.yanki.api.contract</apiPackage>
+                            <modelPackage>com.nttdata.bank.yanki.api.contract.model</modelPackage>
+                            <generateModels>false</generateModels>
+                            <generateSupportingFiles>false</generateSupportingFiles>
+                            <generateApiTests>false</generateApiTests>
+                            <generateModelTests>false</generateModelTests>
+                            <schemaMappings>WalletRequest=com.nttdata.bank.yanki.api.WalletController.WalletRequest,UpdateRequest=com.nttdata.bank.yanki.api.WalletController.UpdateRequest,TransferRequest=com.nttdata.bank.yanki.api.WalletController.TransferRequest,LinkRequest=com.nttdata.bank.yanki.api.WalletController.LinkRequest,AmountRequest=com.nttdata.bank.yanki.api.WalletController.AmountRequest,OperationAccepted=com.nttdata.bank.yanki.api.WalletController.OperationAccepted,Wallet=com.nttdata.bank.yanki.domain.WalletDocument,ErrorResponse=com.nttdata.bank.yanki.api.WalletExceptionHandler.ErrorBody</schemaMappings>
+                            <configOptions>
+                                <interfaceOnly>true</interfaceOnly>
+                                <useSpringBoot3>true</useSpringBoot3>
+                                <useTags>true</useTags>
+                                <skipDefaultInterface>true</skipDefaultInterface>
+                                <openApiNullable>false</openApiNullable>
+                                <useBeanValidation>true</useBeanValidation>
+                                <performBeanValidation>false</performBeanValidation>
+                                <documentationProvider>none</documentationProvider>
+                                <useSwaggerUI>false</useSwaggerUI>
+                                <hideGenerationTimestamp>true</hideGenerationTimestamp>
+                            </configOptions>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
