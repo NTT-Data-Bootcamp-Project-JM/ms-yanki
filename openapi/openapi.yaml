@@ -1,0 +1,260 @@
+openapi: 3.1.0
+info:
+  title: Yanki
+  description: "Mobile wallet, top-up, cash-out, and transfers between phone numbers."
+  version: 1.0.0
+servers:
+- url: http://127.0.0.1:8085
+  description: Generated server url
+security:
+- bearer-jwt: []
+paths:
+  /api/v1/wallets/{id}:
+    get:
+      tags:
+      - wallet-controller
+      operationId: one
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/SingleResponseEntityWalletDocument"
+    put:
+      tags:
+      - wallet-controller
+      operationId: update
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/SingleResponseEntityWalletDocument"
+    delete:
+      tags:
+      - wallet-controller
+      operationId: delete
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/SingleResponseEntityVoid"
+  /api/v1/wallets:
+    get:
+      tags:
+      - wallet-controller
+      operationId: all
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/SingleResponseEntityListWalletDocument"
+    post:
+      tags:
+      - wallet-controller
+      operationId: create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WalletRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/SingleResponseEntityWalletDocument"
+  /api/v1/wallets/{id}/top-ups:
+    post:
+      tags:
+      - wallet-controller
+      operationId: topUp
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AmountRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/SingleResponseEntityMapStringString"
+  /api/v1/wallets/{id}/debit-card:
+    post:
+      tags:
+      - wallet-controller
+      operationId: link
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LinkRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/SingleResponseEntityWalletDocument"
+  /api/v1/wallets/{id}/cash-outs:
+    post:
+      tags:
+      - wallet-controller
+      operationId: cashOut
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AmountRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/SingleResponseEntityMapStringString"
+  /api/v1/wallets/transfers:
+    post:
+      tags:
+      - wallet-controller
+      operationId: transfer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TransferRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/SingleResponseEntityWalletDocument"
+components:
+  schemas:
+    UpdateRequest:
+      type: object
+      properties:
+        email:
+          type: string
+        imei:
+          type: string
+    SingleResponseEntityWalletDocument: {}
+    WalletRequest:
+      type: object
+      properties:
+        documentType:
+          type: string
+          minLength: 1
+        documentNumber:
+          type: string
+          minLength: 1
+        phone:
+          type: string
+          minLength: 1
+        imei:
+          type: string
+          minLength: 1
+        email:
+          type: string
+          minLength: 1
+      required:
+      - documentNumber
+      - documentType
+      - email
+      - imei
+      - phone
+    AmountRequest:
+      type: object
+      properties:
+        amount:
+          type: number
+      required:
+      - amount
+    SingleResponseEntityMapStringString: {}
+    LinkRequest:
+      type: object
+      properties:
+        debitCardNumber:
+          type: string
+          minLength: 1
+      required:
+      - debitCardNumber
+    TransferRequest:
+      type: object
+      properties:
+        sourcePhone:
+          type: string
+          minLength: 1
+        targetPhone:
+          type: string
+          minLength: 1
+        amount:
+          type: number
+      required:
+      - amount
+      - sourcePhone
+      - targetPhone
+    SingleResponseEntityListWalletDocument: {}
+    SingleResponseEntityVoid: {}
+  securitySchemes:
+    bearer-jwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
