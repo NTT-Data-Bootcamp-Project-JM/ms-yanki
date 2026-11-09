@@ -1,9 +1,9 @@
-package com.nttdata.bank.yanki.application;
+package com.nttdata.bank.yanki.service;
 
-import com.nttdata.bank.yanki.domain.WalletDocument;
-import com.nttdata.bank.yanki.domain.WalletOperationDocument;
-import com.nttdata.bank.yanki.domain.WalletOperationRepository;
-import com.nttdata.bank.yanki.domain.WalletRepository;
+import com.nttdata.bank.yanki.domain.model.WalletDocument;
+import com.nttdata.bank.yanki.domain.model.WalletOperationDocument;
+import com.nttdata.bank.yanki.domain.repository.WalletOperationRepository;
+import com.nttdata.bank.yanki.domain.repository.WalletRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

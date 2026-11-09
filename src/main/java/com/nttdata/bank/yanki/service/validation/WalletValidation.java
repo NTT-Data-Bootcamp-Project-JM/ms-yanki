@@ -1,13 +1,13 @@
-package com.nttdata.bank.yanki.domain;
+package com.nttdata.bank.yanki.service.validation;
 
 import java.math.BigDecimal;
 
 /**
  * Yanki accepts DNI, CEX and passport. The holder does not have to be a bank customer.
  */
-public final class WalletRules {
+public final class WalletValidation {
 
-    private WalletRules() {
+    private WalletValidation() {
     }
 
     /**

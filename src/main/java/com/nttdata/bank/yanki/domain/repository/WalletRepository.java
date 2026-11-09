@@ -1,4 +1,6 @@
-package com.nttdata.bank.yanki.domain;
+package com.nttdata.bank.yanki.domain.repository;
+
+import com.nttdata.bank.yanki.domain.model.WalletDocument;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 

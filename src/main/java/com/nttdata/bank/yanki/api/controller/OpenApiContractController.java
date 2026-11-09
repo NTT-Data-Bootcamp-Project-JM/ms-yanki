@@ -1,4 +1,4 @@
-package com.nttdata.bank.yanki.api;
+package com.nttdata.bank.yanki.api.controller;
 
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;

@@ -1,10 +1,10 @@
-package com.nttdata.bank.yanki.application;
+package com.nttdata.bank.yanki.service;
 
-import com.nttdata.bank.yanki.domain.WalletDocument;
-import com.nttdata.bank.yanki.domain.WalletOperationDocument;
-import com.nttdata.bank.yanki.domain.WalletOperationRepository;
-import com.nttdata.bank.yanki.domain.WalletRepository;
-import com.nttdata.bank.yanki.domain.WalletRules;
+import com.nttdata.bank.yanki.domain.model.WalletDocument;
+import com.nttdata.bank.yanki.domain.model.WalletOperationDocument;
+import com.nttdata.bank.yanki.domain.repository.WalletOperationRepository;
+import com.nttdata.bank.yanki.domain.repository.WalletRepository;
+import com.nttdata.bank.yanki.service.validation.WalletValidation;
 import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -45,7 +45,7 @@ public class WalletService {
      */
     public Single<WalletDocument> create(String documentType, String documentNumber, String phone, String imei, String email) {
         return Single.fromCallable(() -> {
-            WalletRules.checkDocument(documentType);
+            WalletValidation.checkDocument(documentType);
             if (wallets.findByPhone(phone).isPresent()) {
                 throw new IllegalArgumentException("That phone already has a wallet");
             }
@@ -121,7 +121,7 @@ public class WalletService {
                     .orElseThrow(() -> new IllegalArgumentException("Source wallet was not found"));
             WalletDocument target = wallets.findByPhone(targetPhone)
                     .orElseThrow(() -> new IllegalArgumentException("Target wallet was not found"));
-            WalletRules.checkBalance(source.getBalance(), amount);
+            WalletValidation.checkBalance(source.getBalance(), amount);
             source.setBalance(source.getBalance().subtract(amount));
             target.setBalance(target.getBalance().add(amount));
             wallets.save(target);
@@ -165,7 +165,7 @@ public class WalletService {
     public Single<String> cashOut(String id, BigDecimal amount) {
         return Single.fromCallable(() -> {
             WalletDocument wallet = load(id);
-            WalletRules.checkBalance(wallet.getBalance(), amount);
+            WalletValidation.checkBalance(wallet.getBalance(), amount);
             wallet.setBalance(wallet.getBalance().subtract(amount));
             wallets.save(wallet);
             return publish(wallet, amount, "CREDIT");

@@ -1,4 +1,4 @@
-package com.nttdata.bank.yanki.domain;
+package com.nttdata.bank.yanki.domain.model;
 
 import lombok.Getter;
 import lombok.Setter;

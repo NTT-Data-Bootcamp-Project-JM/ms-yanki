@@ -1,4 +1,4 @@
-package com.nttdata.bank.yanki.api;
+package com.nttdata.bank.yanki.api.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

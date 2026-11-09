@@ -1,8 +1,8 @@
-package com.nttdata.bank.yanki.infrastructure;
+package com.nttdata.bank.yanki.infrastructure.kafka;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nttdata.bank.yanki.application.WalletService;
+import com.nttdata.bank.yanki.service.WalletService;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
